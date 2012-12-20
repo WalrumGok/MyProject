@@ -1,0 +1,28 @@
+import java.awt.Graphics;
+import java.util.Random;
+
+public abstract class Entity {
+  
+	public int x, y, width, height, speed;
+	
+	Random rand = new Random();
+	
+	public Game game;
+	
+	public Entity(int x, int y, int width, int height, int speed){
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		this.speed = speed;
+	}
+	
+	public abstract void render(Graphics g);
+	
+	public abstract void tick();
+	
+	public abstract boolean collision(Entity entity1);
+	
+	public abstract int getID();
+	
+}
