@@ -1,0 +1,74 @@
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+
+public class Spawner {
+  
+	Game game;
+	
+	Random rand = new Random();
+	
+	public Spawner(Game game){
+		this.game = game;
+	}
+	
+	private void spawnCrazyPowerUp(int size){		
+		for(int i = 0; i < size; i++){
+			game.points.add(new CrazyPowerUp(rand.nextInt(Game.WIDTH) - 20, rand.nextInt(Game.HEIGHT) - 20, 10, 10, 3));
+		}
+	}
+	
+	private void spawnPoints(int size) {
+		for(int i = 0; i < size; i++){
+			game.points.add(new Points(rand.nextInt(Game.WIDTH) - 20, rand.nextInt(Game.HEIGHT) - 20, 10, 10, 3));
+		}
+	}
+	
+	public void tick(){
+		if(game.tickCount % 1000 == 1){
+			spawnPoints(1);
+		}
+		
+		if(game.tickCount % 2000 == 1){
+			spawnCrazyPowerUp(1);
+		}
+		
+		if(game.tickCount % 100 == 1){
+			spawnEnemies(3);
+		}
+		
+		if(Game.gameSpeed > 5){
+			Game.gameSpeed = 5;
+		}
+	}
+	
+	public void spawnEnemies(int size){
+		
+		List<Entity> entities2 = new ArrayList<Entity>();
+		
+		for(int i = 0; i < size; i++){
+			game.entities.add(new EnemyShip(rand.nextInt(Game.WIDTH) - 20, rand.nextInt(Game.HEIGHT) - 20, 20 % Game.gameSpeed + 10, 20 % Game.gameSpeed + 10, Game.gameSpeed));
+		}
+				
+		for(int i = 0; i < game.entities.size();i++){
+			if(game.entities.get(i).getID() != 1){
+				for(int i2 = i + 1; i2 < game.entities.size(); i2++){
+					
+					Rectangle Rectangle1 = new Rectangle(game.entities.get(i).x, game.entities.get(i).y, game.entities.get(i).width, game.entities.get(i).height);
+					Rectangle Rectangle2 = new Rectangle(game.entities.get(i2).x, game.entities.get(i2).y, game.entities.get(i2).width, game.entities.get(i2).height);
+					
+					if(Rectangle1.intersects(Rectangle2)){
+						entities2.add(game.entities.get(i2));
+						System.out.println("Removing" + i2 + " : " + i);
+					}
+				}
+			}
+			
+			game.entities.removeAll(entities2);
+			
+		}
+	}
+	
+}
