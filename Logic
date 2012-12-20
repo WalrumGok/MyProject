@@ -1,0 +1,46 @@
+public class Logic {
+  
+	Game game;
+	
+	public Logic(Game game){
+		this.game = game;
+	}
+	
+	public void tick(){
+		for(int i = 0; i < game.points.size(); i++){
+			game.points.get(i).tick();
+			
+			if(game.ship.collision(game.points.get(i))){
+				if(game.points.get(i).getID() == 3){
+					game.points.remove(i);
+					game.healthBar.hp += 10;
+				}else if(game.points.get(i).getID() == 4){
+					game.ship.onCrazyPowerUp(Game.time);
+					Game.gameSpeed = 1;
+					game.points.remove(i);
+				}
+			}
+		}
+		
+		if(game.healthBar.hp >= 50){
+			game.healthBar.hp = 50;
+		}
+		
+		for(int i = 0; i < game.entities.size(); i++){
+			game.entities.get(i).tick();
+			
+			if(game.ship.collision(game.entities.get(i))){
+				if(!game.ship.crazyPowerUp){
+					game.entities.remove(i);
+					game.healthBar.hp -= 2;
+					game.spawner.spawnEnemies(2 + (Game.time / 10));
+					Game.gameSpeed += 1;
+				}else{
+					game.entities.remove(i);
+				}
+			}
+			
+		}
+	}
+
+}
