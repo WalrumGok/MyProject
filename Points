@@ -1,0 +1,36 @@
+import java.awt.Color;
+import java.awt.Graphics;
+
+
+public class Points extends Entity{
+
+  public Points(int x, int y, int width, int height, int speed) {
+		super(x, y, width, height, speed);
+	}
+
+	public void render(Graphics g) {
+		g.setColor(Color.GREEN);
+		g.fillRect(x, y, width, height);
+	}
+
+	public void tick() {
+		
+		y += speed;
+		
+		if(y > Game.HEIGHT){
+			y = 0 - height;
+			x = rand.nextInt(Game.WIDTH);
+		}
+	}
+
+	public boolean collision(Entity entity1) {
+		return false;
+	}
+
+	public int getID() {
+		return 3;
+	}
+
+
+
+}
