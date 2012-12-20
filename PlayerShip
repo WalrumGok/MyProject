@@ -1,0 +1,88 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
+
+public class PlayerShip extends Entity{
+  
+	InputHandler input;
+	
+	boolean crazyPowerUp = false;
+	
+	public int time;
+	
+	public PlayerShip(int x, int y, int width, int height, int speed, InputHandler input) {
+		super(x, y, width, height, speed);
+		this.input = input;
+	}
+
+	public void render(Graphics g) {
+		if(crazyPowerUp){
+			g.setColor(new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat()));
+		}else{
+			g.setColor(Color.YELLOW);
+		}
+		g.fillRect(x,y,width,height);
+	}
+
+	public void tick() {
+		if(input.left.isPressed()){
+			x -= 1 * speed;
+		}
+		if(input.right.isPressed()){
+			x += 1 * speed;
+		}		
+
+		if(x < 0 - width){
+			x = Game.WIDTH;
+		}
+		if(x > Game.WIDTH + 1){
+			x = 0 - width;
+		}
+		
+		if(crazyPowerUp){
+			if(Game.time > time + 10){
+				offCrazyPowerUp();
+			}
+		}
+	}
+
+	public boolean collision(Entity entity1) {
+		Rectangle Rectangle1 = new Rectangle(x, y, width, height);
+		Rectangle Rectangle2 = new Rectangle(entity1.x, entity1.y, entity1.width, entity1.height);
+		
+		if(entity1.getID() == 1){
+			return false;
+		}
+		
+		if(Rectangle1.intersects(Rectangle2)){
+			return true;
+		}else{
+			return false;
+		}
+		
+		
+	}
+
+	public int getID() {
+		return 1;
+	}
+
+	public void onCrazyPowerUp(int time) {
+		this.time = time;
+		width = width * 2;
+		height = height * 2;
+		x = x - (width / 4);
+		y = y - (height / 4);
+		crazyPowerUp = true;
+	}
+	
+	public void offCrazyPowerUp(){
+		width = width / 2;
+		height = height / 2;
+		x = x + (width / 4);
+		y = y + (height / 4);
+		crazyPowerUp = false;
+	}
+
+}
