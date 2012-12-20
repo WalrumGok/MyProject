@@ -1,0 +1,169 @@
+import java.awt.*;
+import java.awt.image.*;
+import java.util.*;
+import java.util.List;
+import java.util.Random;
+
+import javax.swing.JFrame;
+
+
+public class Game extends Canvas implements Runnable{
+
+  /**
+	 * Rumle
+	 */
+	private static final long serialVersionUID = 1;
+
+	private JFrame frame;
+		
+	public static final int WIDTH = 600;
+	public static final int HEIGHT = WIDTH / 12 * 9;
+	public int tickCount = 0;
+	public static int time = 0;
+	public static int gameSpeed = 2;
+	
+	private static final String TITLE = "Dodger - Rumle";
+	
+	public List<Entity> entities = new ArrayList<Entity>();
+	public List<Entity> points = new ArrayList<Entity>();
+	
+	Random rand = new Random();
+		
+	InputHandler input = new InputHandler(this);
+	Spawner spawner = new Spawner(this);
+	Physics physics = new Physics(this);
+	Timer timer;
+	PlayerShip ship;
+	HealthBar healthBar = new HealthBar(50, 50, 15, this);
+	
+	private boolean running = false;
+	private boolean shouldRender = true;
+	
+	public Game(){
+		setMinimumSize(new Dimension(WIDTH, HEIGHT));
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		setMaximumSize(new Dimension(WIDTH, HEIGHT));
+
+		frame = new JFrame(TITLE);
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLayout(new BorderLayout());
+		
+		frame.add(this, BorderLayout.CENTER);
+		frame.pack();
+		
+		frame.setResizable(false);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);	
+	}
+	
+	public void run() {
+		timer = new Timer(this);
+		init();
+		
+		while(running){
+			
+			timer.getDelta();
+			
+			while (timer.delta >= 1) {
+				tick();
+				timer.ticks++;
+				timer.delta -= 1;
+				shouldRender = true;
+			}
+			
+			if (shouldRender) {
+				timer.frames++;
+				render();
+			}
+
+			timer.updatePerSecond();
+			
+			try {
+				Thread.sleep(2);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+		}
+	}
+	
+	public void tick(){
+		tickCount++;		
+		spawner.tick();
+		physics.tick();
+	}
+	
+	public void render(){
+		BufferStrategy bs = getBufferStrategy();
+		if(bs == null){
+			createBufferStrategy(3);
+			return;
+		}
+		
+		Graphics g = bs.getDrawGraphics();
+				
+		g.clearRect(0, 0, WIDTH, HEIGHT);
+		
+		g.setColor(Color.black);
+		g.fillRect(0, 0, WIDTH, HEIGHT);
+		
+		g.setColor(Color.WHITE);
+		g.setFont(new Font("Garamond", Font.BOLD, 43));
+		
+		for(int i = 0; i < entities.size(); i++){
+			entities.get(i).render(g);
+		}
+		
+		for(int i = 0; i < points.size(); i++){
+			points.get(i).render(g);
+		}
+		
+		healthBar.render(g);
+		
+		if(healthBar.hp <= 0){
+			for(int i = 0; i < entities.size();i++){
+				entities.remove(i);
+			}
+			for(int i = 0; i < points.size();i++){
+				points.remove(i);
+			}
+			healthBar.remove = true;
+			g.setColor(Color.WHITE);
+			String endTitle = "You died!";
+			g.drawString(endTitle, WIDTH / 2 - (endTitle.length() * 10), HEIGHT / 2 - 15);
+		}
+		
+		String timeString = convertSimple(time);
+		
+		g.setColor(Color.WHITE);
+		g.drawString("Time : " + timeString, WIDTH - 200, 0 + 50);
+		
+		g.dispose();
+		bs.show();
+		
+	}
+	
+	public static String convertSimple(int i) {
+	    return "" + i;
+	}
+	
+	public void init(){
+		entities.add(ship = new PlayerShip(WIDTH / 2 - 50,HEIGHT - 100,25,25,gameSpeed + 1, input));	
+		spawner.spawnEnemies(20);
+	}
+	
+	public static void main(String[] args) {
+		new Game().start();
+	}
+	
+	public synchronized void start(){
+		running = true;
+		new Thread(this).start();
+	}
+	
+	public synchronized void stop(){
+		running = false;
+	}
+
+}
