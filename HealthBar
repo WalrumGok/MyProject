@@ -1,0 +1,36 @@
+import java.awt.Color;
+import java.awt.Graphics;
+
+
+public class HealthBar {
+  
+	public int hp, width, height;
+	
+	public boolean remove = false;
+	
+	Game game;
+	
+	public HealthBar(int hp, int width, int height, Game game){
+		this.hp = hp;
+		this.width = width;
+		this.height = height;
+		this.game = game;
+	}
+	
+	public void render(Graphics g){
+		if(!remove){
+			if(game.ship.crazyPowerUp){
+				g.setColor(Color.red);
+				g.fillRect(game.ship.x, game.ship.y - (game.ship.height /2 ), width, height);
+				g.setColor(Color.green);
+				g.fillRect(game.ship.x, game.ship.y - (game.ship.height / 2), hp, height);
+			}else{				
+				g.setColor(Color.red);
+				g.fillRect(game.ship.x - (width / 4), game.ship.y - (game.ship.height), width, height);
+				g.setColor(Color.green);
+				g.fillRect(game.ship.x - (width / 4), game.ship.y - (game.ship.height), hp, height);
+			}
+		}
+	}
+
+}
