@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 
 public class Game extends Canvas implements Runnable{
 
-  /**
+	/**
 	 * Rumle
 	 */
 	private static final long serialVersionUID = 1;
@@ -31,7 +31,7 @@ public class Game extends Canvas implements Runnable{
 		
 	InputHandler input = new InputHandler(this);
 	Spawner spawner = new Spawner(this);
-	Physics physics = new Physics(this);
+	Logic logic = new Logic(this);
 	Timer timer;
 	PlayerShip ship;
 	HealthBar healthBar = new HealthBar(50, 50, 15, this);
@@ -91,7 +91,7 @@ public class Game extends Canvas implements Runnable{
 	public void tick(){
 		tickCount++;		
 		spawner.tick();
-		physics.tick();
+		logic.tick();
 	}
 	
 	public void render(){
